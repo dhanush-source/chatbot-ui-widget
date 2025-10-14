@@ -1,0 +1,19 @@
+# Development files
+src/
+node_modules/
+.vscode/
+.idea/
+
+# Build config
+vite.config.js
+index.html
+
+# Development assets
+public/
+
+# Git files
+.git/
+.gitignore
+
+# Only include dist and README
+

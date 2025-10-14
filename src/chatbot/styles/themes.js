@@ -94,12 +94,12 @@ export function getTheme(themeName) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       return prefersDark ? { ...darkTheme } : { ...lightTheme };
     }
-    // Fallback to dark if detection not available
-    return { ...darkTheme };
+    // Fallback to light if detection not available
+    return { ...lightTheme };
   }
   
-  // Default to dark theme
-  return { ...darkTheme };
+  // Default to light theme
+  return { ...lightTheme };
 }
 
 /**

@@ -1,8 +1,34 @@
 {
   "name": "chatbot-ui-widget",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern, customizable, and framework-agnostic chatbot widget built with vanilla JavaScript and CSS",
   "type": "module",
+  "main": "./dist/chatbot-widget.umd.cjs",
+  "module": "./dist/chatbot-widget.js",
+  "exports": {
+    ".": {
+      "import": "./dist/chatbot-widget.js",
+      "require": "./dist/chatbot-widget.umd.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "chatbot",
+    "widget",
+    "chat",
+    "ui",
+    "react",
+    "vue",
+    "javascript",
+    "frontend",
+    "customizable",
+    "shadow-dom"
+  ],
+  "author": "Dhanush <dhanush@oneassure.in>",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

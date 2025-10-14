@@ -4,8 +4,10 @@ import { markdownToHtml } from './utils/markdown.js'
 
 let chatbotWidget = null;
 // Get session id for the user
-let SESSION_ID = 'testing-ui-23'; 
+// use 44 to see chat history for bpjs and 43 for oneassure.
+let SESSION_ID = 'testing-ui-43'; 
 
+// API LOGIC
 async function loadChatHistory() {
   try {
     const response = await chatApi.getChatHistory(SESSION_ID);
@@ -43,6 +45,68 @@ async function loadChatHistory() {
   }
 }
 
+// OneAssure Theme Configuration
+const OAThemeConfig = {
+  layout: 'inline',
+  target: '#chat-container',
+  width: '100%',
+  height: '100%',
+  
+  theme: 'light',
+  
+  themeOverrides: {
+    primaryColor: '#36B3B3',        
+    secondaryColor: '#2196F3',      
+    accentColor: '#1976D2',         
+    
+    bgPrimary: '#FFFFFF',           
+    bgSecondary: '#E0F2F1',         
+    bgTertiary: '#F5FAFA',          
+    
+
+    textPrimary: '#333333',         
+    textSecondary: '#555555',       
+    textMuted: '#999999',           
+    
+    
+    borderColor: '#E0E0E0',         
+    shadowColor: 'rgba(54, 179, 179, 0.15)',  
+    
+
+    headerBg: '#36B3B3',            
+    headerText: '#FFFFFF',          
+    
+    
+    botBubbleBg: '#E0F2F1',         
+    botBubbleText: '#333333',       
+    userBubbleBg: '#1976D2',        
+    userBubbleText: '#FFFFFF',      
+    
+    
+    inputBg: '#FFFFFF',             
+    inputBorder: '#E0E0E0',         
+    inputText: '#333333',           
+    inputPlaceholder: '#999999',    
+    
+
+    buttonPrimary: '#1976D2',      
+    buttonHover: '#1565C0',         
+    
+    
+    fontFamily: 'Open Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    
+    
+    borderRadius: '8px',            
+    shadow: '0 2px 8px rgba(54, 179, 179, 0.12)',           
+    shadowHover: '0 4px 16px rgba(54, 179, 179, 0.18)',     
+  },
+  
+  autoOpen: true,
+  showGreeting: false,  // Will be set dynamically based on chat history
+  greeting: 'Hi! I\'m your OneAssure Insurance Assistant. How can I help you today?',
+  placeholder: 'Type your message here...',
+};
+
 async function initChatbot() {
   // Only initialize once
   if (chatbotWidget) {
@@ -53,26 +117,10 @@ async function initChatbot() {
   
   const chatHistory = await loadChatHistory();
   
-  chatbotWidget = new ChatbotWidget({
-    layout: 'inline',
-    target: '#chat-container',
-    width: '100%',
-    height: '100%',
-    
-    // Theme: 'light', 'dark', or 'auto'
-    theme: 'dark',
-    
-    // Optional: Override theme colors/fonts
-    themeOverrides: {
-      primaryColor: '#3B82F6',
-      fontFamily: 'Inter, -apple-system, sans-serif'
-    },
-    
-    autoOpen: true,
+  const config = {
+    ...OAThemeConfig,
     initialMessages: chatHistory,
-    showGreeting: chatHistory.length === 0, 
-    greeting: 'Hi! How can I help you today?',
-    placeholder: 'Write a message...',
+    showGreeting: chatHistory.length === 0,
     onMessage: async (message) => {
       try {
         const response = await chatApi.sendMessage(message);
@@ -98,7 +146,9 @@ async function initChatbot() {
         return { html: 'Sorry, I\'m having trouble connecting to the server. Please try again.', isHtml: false };
       }
     }
-  });
+  };
+  
+  chatbotWidget = new ChatbotWidget(config);
 }
 
 // Make function globally available
