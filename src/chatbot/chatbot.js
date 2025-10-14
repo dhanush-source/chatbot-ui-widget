@@ -2,6 +2,7 @@
 import { ChatToggle } from './components/ChatToggle.js';
 import { ChatWindow } from './components/ChatWindow.js';
 import { Message } from './components/Message.js';
+import { LoadingIndicator } from './components/LoadingIndicator.js';
 import { getAllStyles } from './styles/index.js';
 import { getTheme, watchSystemTheme } from './styles/themes.js';
 import { themeToCSSVariables, mergeStyles } from './utils/styleProcessor.js';
@@ -17,6 +18,7 @@ class ChatbotWidget {
     this.chatToggle = new ChatToggle(this.config);
     this.chatWindow = new ChatWindow(this.config);
     this.messageComponent = new Message(this.config);
+    this.loadingIndicator = new LoadingIndicator(this.config);
     
     this.init();
   }
@@ -272,6 +274,21 @@ class ChatbotWidget {
     this.messages.push({ text: html || text, sender, timestamp });
   }
 
+  showLoadingIndicator() {
+    const messagesContainer = this.shadowRoot.getElementById('chatbot-messages');
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = this.loadingIndicator.render();
+    messagesContainer.appendChild(tempContainer.firstElementChild);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  hideLoadingIndicator() {
+    const loadingElement = this.shadowRoot.getElementById('chatbot-loading');
+    if (loadingElement) {
+      loadingElement.remove();
+    }
+  }
+
   async sendMessage() {
     const input = this.shadowRoot.getElementById('chatbot-input');
     const text = input.value.trim();
@@ -283,7 +300,14 @@ class ChatbotWidget {
 
     if (this.config.onMessage) {
       try {
+        // Show loading animation
+        this.showLoadingIndicator();
+        
         const response = await this.config.onMessage(text);
+        
+        // Hide loading animation
+        this.hideLoadingIndicator();
+        
         if (response) {
           // Handle both string and object responses
           if (typeof response === 'object' && response.html) {
@@ -302,6 +326,9 @@ class ChatbotWidget {
           }
         }
       } catch (error) {
+        // Hide loading animation on error
+        this.hideLoadingIndicator();
+        
         this.addMessage({ 
           text: 'Sorry, something went wrong. Please try again.', 
           sender: 'bot', 

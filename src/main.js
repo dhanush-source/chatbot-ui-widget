@@ -5,7 +5,7 @@ import { markdownToHtml } from './utils/markdown.js'
 let chatbotWidget = null;
 // Get session id for the user
 // use 44 to see chat history for bpjs and 43 for oneassure.
-let SESSION_ID = 'testing-ui-43'; 
+let SESSION_ID = 'testing-ui-45'; 
 
 // API LOGIC
 async function loadChatHistory() {
@@ -52,7 +52,7 @@ const OAThemeConfig = {
   width: '100%',
   height: '100%',
   
-  theme: 'light',
+  theme: 'dark',
   
   themeOverrides: {
     primaryColor: '#36B3B3',        
