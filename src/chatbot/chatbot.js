@@ -3,6 +3,8 @@ import { ChatToggle } from './components/ChatToggle.js';
 import { ChatWindow } from './components/ChatWindow.js';
 import { Message } from './components/Message.js';
 import { getAllStyles } from './styles/index.js';
+import { getTheme, watchSystemTheme } from './styles/themes.js';
+import { themeToCSSVariables, mergeStyles } from './utils/styleProcessor.js';
 
 class ChatbotWidget {
   constructor(config = {}) {
@@ -35,9 +37,18 @@ class ChatbotWidget {
       showToggle: true,
       showGreeting: true,
       
-      // Theme
-      theme: 'dark',
-      primaryColor: '#3B82F6',
+      // Theme options
+      theme: 'dark', // 'light', 'dark', 'auto'
+      primaryColor: '#3B82F6', // Backward compatibility
+      
+      // Component-level styles
+      componentStyles: {},
+      
+      // Theme overrides
+      themeOverrides: {},
+      
+      // Custom CSS string
+      customStyles: '',
       
       // Content
       greeting: 'Hi! How can I help you today?',
@@ -56,7 +67,51 @@ class ChatbotWidget {
       onClose: null
     };
 
-    return { ...defaults, ...userConfig };
+    const merged = { ...defaults, ...userConfig };
+    
+    // Process theme system
+    merged.processedTheme = this.processTheme(merged);
+    
+    return merged;
+  }
+
+  processTheme(config) {
+    // Get base theme from preset
+    const baseTheme = getTheme(config.theme);
+    
+    // Handle backward compatibility - if primaryColor is set, add to themeOverrides
+    if (config.primaryColor && config.primaryColor !== '#3B82F6') {
+      config.themeOverrides = config.themeOverrides || {};
+      if (!config.themeOverrides.primaryColor) {
+        config.themeOverrides.primaryColor = config.primaryColor;
+      }
+    }
+    
+    // Merge all styles in priority order
+    const mergedTheme = mergeStyles(
+      baseTheme,
+      config.componentStyles,
+      config.themeOverrides
+    );
+    
+    // Convert to CSS variables
+    const cssVariables = themeToCSSVariables(mergedTheme);
+    
+    // Add custom CSS variables if provided
+    if (mergedTheme['--radius']) cssVariables['--radius'] = mergedTheme['--radius'];
+    if (mergedTheme['--radius-sm']) cssVariables['--radius-sm'] = mergedTheme['--radius-sm'];
+    if (mergedTheme['--shadow']) cssVariables['--shadow'] = mergedTheme['--shadow'];
+    if (mergedTheme['--font-family']) cssVariables['--font-family'] = mergedTheme['--font-family'];
+    if (mergedTheme['--font-size']) cssVariables['--font-size'] = mergedTheme['--font-size'];
+    
+    // Add component-specific overrides
+    Object.keys(mergedTheme).forEach(key => {
+      if (key.startsWith('--') && !cssVariables[key]) {
+        cssVariables[key] = mergedTheme[key];
+      }
+    });
+    
+    return cssVariables;
   }
 
   init() {
@@ -99,9 +154,17 @@ class ChatbotWidget {
   }
 
   attachStyles() {
-    const style = document.createElement('style');
-    style.textContent = getAllStyles(this.config);
-    this.shadowRoot.appendChild(style);
+    // Inject base styles with processed theme
+    const baseStyle = document.createElement('style');
+    baseStyle.textContent = getAllStyles(this.config);
+    this.shadowRoot.appendChild(baseStyle);
+    
+    // Inject custom CSS if provided
+    if (this.config.customStyles && typeof this.config.customStyles === 'string') {
+      const customStyle = document.createElement('style');
+      customStyle.textContent = this.config.customStyles;
+      this.shadowRoot.appendChild(customStyle);
+    }
   }
 
   attachEventListeners() {

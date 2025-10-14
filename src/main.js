@@ -3,15 +3,15 @@ import { chatApi } from './api/api.js'
 import { markdownToHtml } from './utils/markdown.js'
 
 let chatbotWidget = null;
-let SESSION_ID = 'testing-ui-23'; // Change this to start a new chat session
+// Get session id for the user
+let SESSION_ID = 'testing-ui-23'; 
 
 async function loadChatHistory() {
   try {
     const response = await chatApi.getChatHistory(SESSION_ID);
-    console.log('Chat History Response:', response);
     
     if (response.data && Array.isArray(response.data)) {
-      // Reverse the array to show oldest first
+      // get the older msgs first
       const messages = response.data.reverse();
       
       // Filter and format messages
@@ -58,8 +58,16 @@ async function initChatbot() {
     target: '#chat-container',
     width: '100%',
     height: '100%',
+    
+    // Theme: 'light', 'dark', or 'auto'
     theme: 'dark',
-    primaryColor: '#3B82F6',
+    
+    // Optional: Override theme colors/fonts
+    themeOverrides: {
+      primaryColor: '#3B82F6',
+      fontFamily: 'Inter, -apple-system, sans-serif'
+    },
+    
     autoOpen: true,
     initialMessages: chatHistory,
     showGreeting: chatHistory.length === 0, 

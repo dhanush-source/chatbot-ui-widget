@@ -1,7 +1,7 @@
 // Input box and send button styles
 export const inputStyles = `
   .chatbot-input-container {
-    padding: 16px;
+    padding: var(--input-padding, 16px);
     border-top: 1px solid var(--border-color);
     background: var(--bg-secondary);
   }
@@ -14,11 +14,11 @@ export const inputStyles = `
 
   .chatbot-input {
     flex: 1;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    background: var(--input-bg, var(--bg-primary));
+    border: 1px solid var(--input-border, var(--border-color));
+    border-radius: var(--radius-sm, 8px);
     padding: 12px 16px;
-    color: var(--text-primary);
+    color: var(--input-text, var(--text-primary));
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s ease;
@@ -29,13 +29,13 @@ export const inputStyles = `
   }
 
   .chatbot-input::placeholder {
-    color: var(--text-muted);
+    color: var(--input-placeholder, var(--text-muted));
   }
 
   .chatbot-btn-send {
-    background: var(--primary-color);
-    color: white;
-    border-radius: var(--radius-sm);
+    background: var(--btn-send-bg, var(--primary-color));
+    color: var(--btn-send-color, white);
+    border-radius: var(--radius-sm, 8px);
     padding: 12px;
     min-width: 44px;
     border: none;
@@ -47,7 +47,7 @@ export const inputStyles = `
   }
 
   .chatbot-btn-send:hover {
-    background: color-mix(in srgb, var(--primary-color) 85%, black);
+    background: color-mix(in srgb, var(--btn-send-bg, var(--primary-color)) 85%, black);
   }
 
   .chatbot-btn-send:disabled {

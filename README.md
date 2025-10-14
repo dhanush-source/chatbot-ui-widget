@@ -1,0 +1,743 @@
+# Chatbot UI Widget
+
+A modern, customizable, and framework-agnostic chatbot widget built with vanilla JavaScript and CSS. Features a modular component architecture, comprehensive theming system, and Shadow DOM isolation for seamless integration into any website.
+
+## Features
+
+- **Fully Customizable** - Preset themes, component-level styling, and custom CSS support
+- **Light/Dark Modes** - Built-in themes with auto system detection
+- **Responsive Design** - Works perfectly on desktop, tablet, and mobile
+- **Multiple Layouts** - Bubble, inline, embedded, and fullscreen modes
+- **Framework Agnostic** - Works with React, Vue, vanilla JS, or any framework
+- **Shadow DOM Isolation** - No style conflicts with your existing website
+- **Zero Dependencies** - Lightweight and fast
+- **Markdown Support** - Rich text rendering for bot responses
+- **Easy Integration** - Simple API, minimal configuration
+
+## Installation
+
+```bash
+npm install chatbot-ui-widget
+```
+
+Or use directly in HTML:
+```html
+<script src="https://unpkg.com/chatbot-ui-widget/dist/chatbot-widget.js"></script>
+```
+
+## Quick Start
+
+### Basic Usage
+
+```javascript
+import { ChatbotWidget } from 'chatbot-ui-widget';
+
+new ChatbotWidget({
+  target: '#chat-container',
+  layout: 'inline',
+  theme: 'dark',
+  onMessage: async (message) => {
+    // Call your API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+    return data.reply;
+  }
+});
+```
+
+### HTML Setup
+
+```html
+<div id="chat-container"></div>
+<script type="module">
+  import { ChatbotWidget } from './chatbot-widget.js';
+  
+  new ChatbotWidget({
+    target: '#chat-container',
+    layout: 'inline'
+  });
+</script>
+```
+
+---
+
+## Integration Examples
+
+### React/Next.js
+
+Create a reusable chatbot component:
+
+```jsx
+// components/Chatbot.jsx
+import { useEffect, useRef } from 'react';
+import { ChatbotWidget } from 'chatbot-ui-widget';
+
+export default function Chatbot({ sessionId, onMessage }) {
+  const containerRef = useRef(null);
+  const widgetRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current && !widgetRef.current) {
+      widgetRef.current = new ChatbotWidget({
+        target: containerRef.current,
+        layout: 'inline',
+        width: '100%',
+        height: '600px',
+        theme: 'dark',
+        autoOpen: true,
+        onMessage: onMessage || (async (msg) => {
+          // Default API handler
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            body: JSON.stringify({ message: msg, sessionId })
+          });
+          const data = await res.json();
+          return data.reply;
+        })
+      });
+    }
+
+    return () => {
+      if (widgetRef.current) {
+        widgetRef.current.destroy();
+      }
+    };
+  }, [sessionId, onMessage]);
+
+  return <div ref={containerRef} style={{ width: '100%', height: '600px' }} />;
+}
+```
+
+**Usage:**
+
+```jsx
+// app/chat/page.jsx
+import Chatbot from '@/components/Chatbot';
+
+export default function ChatPage() {
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Chat Support</h1>
+      <Chatbot sessionId="user-123" />
+    </div>
+  );
+}
+```
+
+### Vue.js
+
+```vue
+<!-- components/Chatbot.vue -->
+<template>
+  <div ref="chatContainer" class="chat-container"></div>
+</template>
+
+<script>
+import { ChatbotWidget } from 'chatbot-ui-widget';
+
+export default {
+  name: 'Chatbot',
+  props: {
+    sessionId: String,
+    theme: {
+      type: String,
+      default: 'dark'
+    }
+  },
+  mounted() {
+    this.widget = new ChatbotWidget({
+      target: this.$refs.chatContainer,
+      layout: 'inline',
+      theme: this.theme,
+      onMessage: async (message) => {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message, sessionId: this.sessionId })
+        });
+        const data = await response.json();
+        return data.reply;
+      }
+    });
+  },
+  beforeUnmount() {
+    if (this.widget) {
+      this.widget.destroy();
+    }
+  }
+};
+</script>
+
+<style scoped>
+.chat-container {
+  width: 100%;
+  height: 600px;
+}
+</style>
+```
+
+### Vanilla JavaScript
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chatbot</title>
+  <style>
+    #chat-container {
+      max-width: 800px;
+      height: 600px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container"></div>
+  
+  <script type="module">
+    import { ChatbotWidget } from './chatbot-widget.js';
+    
+    new ChatbotWidget({
+      target: '#chat-container',
+      layout: 'inline',
+      theme: 'auto', // Matches system preference
+      onMessage: async (message) => {
+        const response = await fetch('https://api.example.com/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        return data.reply;
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+---
+
+## Theming & Customization
+
+### Preset Themes
+
+Choose from built-in themes:
+
+```javascript
+new ChatbotWidget({
+  theme: 'light',  // 'light', 'dark', or 'auto'
+  target: '#chat'
+});
+```
+
+### Quick Theme Overrides
+
+Override common properties:
+
+```javascript
+new ChatbotWidget({
+  theme: 'dark',
+  themeOverrides: {
+    primaryColor: '#FF6B6B',           // Brand color
+    fontFamily: 'Inter, sans-serif',   // Custom font
+    borderRadius: '16px',              // Rounded corners
+    shadow: '0 8px 32px rgba(0,0,0,0.2)' // Custom shadow
+  }
+});
+```
+
+### Component-Level Styling
+
+Customize individual components:
+
+```javascript
+new ChatbotWidget({
+  theme: 'dark',
+  componentStyles: {
+    header: {
+      backgroundColor: '#1F2937',
+      textColor: '#F9FAFB',
+      padding: '20px'
+    },
+    messages: {
+      botBubbleBackground: '#374151',
+      userBubbleBackground: '#3B82F6',
+      spacing: '20px',
+      borderRadius: '18px'
+    },
+    input: {
+      backgroundColor: '#1F2937',
+      borderColor: '#4B5563'
+    }
+  }
+});
+```
+
+### Custom CSS
+
+For complete control, inject custom CSS:
+
+```javascript
+new ChatbotWidget({
+  theme: 'dark',
+  customStyles: `
+    .chatbot-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .chatbot-message.user .chatbot-message-bubble {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .chatbot-btn-send:hover {
+      transform: scale(1.1);
+    }
+  `
+});
+```
+
+**Import CSS from file (Vite/Webpack):**
+
+```javascript
+import customStyles from './chatbot-theme.css?inline';
+
+new ChatbotWidget({
+  theme: 'dark',
+  customStyles: customStyles
+});
+```
+
+---
+
+## Layout Modes
+
+### Inline Layout (Default)
+
+Part of the page flow, no z-index, integrates naturally:
+
+```javascript
+new ChatbotWidget({
+  layout: 'inline',
+  target: '#chat-container',
+  width: '100%',
+  height: '600px'
+});
+```
+
+### Bubble Layout
+
+Floating chat button in the corner:
+
+```javascript
+new ChatbotWidget({
+  layout: 'bubble',
+  position: 'bottom-right', // or 'bottom-left', 'top-right', 'top-left'
+  autoOpen: false // Opens when user clicks the bubble
+});
+```
+
+### Fullscreen Layout
+
+Covers the entire viewport:
+
+```javascript
+new ChatbotWidget({
+  layout: 'fullscreen',
+  autoOpen: false
+});
+```
+
+### Embedded Layout
+
+Fixed within a container:
+
+```javascript
+new ChatbotWidget({
+  layout: 'embedded',
+  target: '#sidebar-chat',
+  width: '350px',
+  height: '500px'
+});
+```
+
+---
+
+## Configuration Options
+
+### Complete API Reference
+
+```javascript
+new ChatbotWidget({
+  // Required
+  target: '#chat-container',        // CSS selector or HTMLElement
+  
+  // Layout
+  layout: 'inline',                 // 'inline' | 'bubble' | 'fullscreen' | 'embedded'
+  width: '100%',                    // CSS width
+  height: '600px',                  // CSS height
+  position: 'bottom-right',         // For bubble layout
+  
+  // Theme
+  theme: 'dark',                    // 'light' | 'dark' | 'auto'
+  themeOverrides: {},               // Quick theme customization
+  componentStyles: {},              // Component-level styling
+  customStyles: '',                 // Custom CSS string
+  
+  // Display
+  autoOpen: true,                   // Auto-open on load
+  showToggle: true,                 // Show toggle button (bubble only)
+  showGreeting: true,               // Show welcome message
+  greeting: 'Hi! How can I help?',  // Welcome message text
+  placeholder: 'Type a message...',  // Input placeholder
+  
+  // Data
+  initialMessages: [],              // Pre-load messages
+  
+  // Avatars
+  avatar: {
+    bot: '/bot-avatar.jpg',
+    user: '/user-avatar.jpg'
+  },
+  
+  // Callbacks
+  onMessage: async (msg) => {},     // Handle user messages
+  onOpen: () => {},                 // Widget opened
+  onClose: () => {}                 // Widget closed
+});
+```
+
+### Available Theme Override Properties
+
+| Property | Type | Description | Example |
+|----------|------|-------------|---------|
+| `primaryColor` | string | Primary brand color | `#3B82F6` |
+| `secondaryColor` | string | Secondary accent | `#6366F1` |
+| `accentColor` | string | Tertiary accent | `#8B5CF6` |
+| `fontFamily` | string | Font family | `'Poppins, sans-serif'` |
+| `fontSize` | string | Base font size | `'14px'` |
+| `borderRadius` | string | Border radius | `'12px'` |
+| `shadow` | string | Box shadow | `'0 4px 12px rgba(0,0,0,0.1)'` |
+
+### Component Style Properties
+
+**Header:**
+- `backgroundColor`, `textColor`, `statusColor`, `borderColor`, `avatarSize`, `padding`
+
+**Messages:**
+- `botBubbleBackground`, `userBubbleBackground`, `botTextColor`, `userTextColor`
+- `timestampColor`, `spacing`, `maxWidth`, `borderRadius`, `avatarSize`
+
+**Input:**
+- `backgroundColor`, `textColor`, `borderColor`, `placeholderColor`
+- `buttonBackground`, `buttonColor`, `padding`
+
+**Layout:**
+- `borderRadius`, `shadow`, `spacing`, `fontFamily`, `fontSize`
+
+---
+
+## Architecture
+
+### Component Structure
+
+```
+ChatbotWidget (Main Class)
+├── ChatToggle (Bubble layout only)
+├── ChatWindow
+│   ├── Header (Avatar, name, controls)
+│   ├── MessageList
+│   │   └── Message[] (Individual bubbles)
+│   └── InputBox (Input + send button)
+└── Styles (Shadow DOM isolated)
+```
+
+### Directory Structure
+
+```
+src/chatbot/
+├── chatbot.js              # Main widget class
+├── components/
+│   ├── ChatToggle.js       # Toggle button
+│   ├── ChatWindow.js       # Window container
+│   ├── Header.js           # Header component
+│   ├── MessageList.js      # Messages container
+│   ├── Message.js          # Message bubble
+│   └── InputBox.js         # Input field
+├── styles/
+│   ├── base.js             # CSS variables
+│   ├── themes.js           # Theme presets
+│   ├── layouts.js          # Layout styles
+│   ├── header.js           # Header styles
+│   ├── messages.js         # Message styles
+│   └── input.js            # Input styles
+└── utils/
+    └── styleProcessor.js   # Theme processing
+```
+
+### Key Features
+
+- **Shadow DOM** - Complete style isolation from host page
+- **Modular Components** - Each component is self-contained
+- **CSS Variables** - All styles use CSS custom properties
+- **Theme System** - Multiple levels of customization
+- **Event-Driven** - Clean callback architecture
+
+---
+
+## Advanced Examples
+
+### Example 1: Corporate Theme
+
+```javascript
+new ChatbotWidget({
+  theme: 'light',
+  themeOverrides: {
+    primaryColor: '#0066CC',
+    fontFamily: 'Arial, sans-serif'
+  },
+  componentStyles: {
+    header: {
+      backgroundColor: '#0066CC',
+      textColor: '#FFFFFF'
+    },
+    messages: {
+      userBubbleBackground: '#0066CC',
+      botBubbleBackground: '#F0F4F8'
+    }
+  }
+});
+```
+
+### Example 2: Glassmorphism
+
+```javascript
+new ChatbotWidget({
+  theme: 'dark',
+  customStyles: `
+    .chatbot-window {
+      background: rgba(31, 41, 55, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .chatbot-header {
+      background: rgba(55, 65, 81, 0.6);
+      backdrop-filter: blur(10px);
+    }
+    
+    .chatbot-message.bot .chatbot-message-bubble {
+      background: rgba(55, 65, 81, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  `
+});
+```
+
+### Example 3: With Chat History
+
+```javascript
+async function loadChatHistory(sessionId) {
+  const response = await fetch(`/api/chat/history/${sessionId}`);
+  const data = await response.json();
+  
+  return data.messages.map(msg => ({
+    text: msg.content,
+    sender: msg.role === 'user' ? 'user' : 'bot',
+    timestamp: new Date(msg.timestamp)
+  }));
+}
+
+const history = await loadChatHistory('session-123');
+
+new ChatbotWidget({
+  target: '#chat',
+  layout: 'inline',
+  initialMessages: history,
+  showGreeting: history.length === 0,
+  onMessage: async (message) => {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, sessionId: 'session-123' })
+    });
+    const data = await response.json();
+    return data.reply;
+  }
+});
+```
+
+### Example 4: With Markdown Support
+
+```javascript
+import { markdownToHtml } from './utils/markdown.js';
+
+new ChatbotWidget({
+  target: '#chat',
+  onMessage: async (message) => {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+    
+    // Convert markdown to HTML
+    const htmlContent = markdownToHtml(data.reply);
+    
+    return {
+      html: htmlContent,
+      isHtml: true
+    };
+  }
+});
+```
+
+---
+
+## Methods
+
+### `destroy()`
+
+Clean up and remove the widget:
+
+```javascript
+const chatbot = new ChatbotWidget({ target: '#chat' });
+
+// Later...
+chatbot.destroy();
+```
+
+### `open()`
+
+Programmatically open the widget:
+
+```javascript
+chatbot.open();
+```
+
+### `close()`
+
+Programmatically close the widget:
+
+```javascript
+chatbot.close();
+```
+
+### `addMessage()`
+
+Manually add a message:
+
+```javascript
+chatbot.addMessage({
+  text: 'Hello!',
+  sender: 'bot',
+  timestamp: new Date()
+});
+```
+
+---
+
+## Responsive Design
+
+The widget is fully responsive and works on all screen sizes:
+
+- **Desktop:** Full-featured chat interface
+- **Tablet:** Optimized touch interactions
+- **Mobile:** 
+  - Bubble layout becomes fullscreen
+  - Touch-friendly UI
+  - Optimized keyboard handling
+
+---
+
+## Best Practices
+
+1. **Start Simple** - Use preset themes, then customize
+2. **Progressive Enhancement** - Layer customizations (theme → overrides → component styles → custom CSS)
+3. **Accessibility** - Ensure sufficient color contrast
+4. **Performance** - Lazy load chat history if large
+5. **Error Handling** - Always handle API errors gracefully
+6. **Session Management** - Track user sessions for continuity
+7. **Testing** - Test in both light and dark modes if using `auto`
+
+---
+
+## Debugging
+
+### Inspect Shadow DOM
+
+Open browser DevTools → Elements → Find your chatbot container → Expand #shadow-root
+
+### Check Console Logs
+
+The widget logs important events to the console during development.
+
+### CSS Variables
+
+Inspect CSS variables in DevTools:
+```css
+:host {
+  --primary-color: #3B82F6;
+  --bg-primary: #1F2937;
+  /* ... */
+}
+```
+
+---
+
+## Build for Production
+
+```bash
+npm run build
+```
+
+Output:
+- `dist/chatbot-widget.js` - ES Module
+- `dist/chatbot-widget.umd.cjs` - UMD for legacy browsers
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+---
+
+## License
+
+MIT License - feel free to use in your projects!
+
+---
+
+## Features Roadmap
+
+- [ ] TypeScript definitions
+- [ ] Voice message support
+- [ ] File upload capability
+- [ ] Emoji picker
+- [ ] Typing indicators
+- [ ] Read receipts
+- [ ] Multi-language support
+- [ ] Additional preset themes
+
+---
+
+## Support
+
+Need help? Have questions?
+
+- Open an issue on GitHub
+- Check existing issues and discussions
+- Read the documentation carefully
+
+---
+
+**Built with care using vanilla JavaScript**

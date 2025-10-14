@@ -2,11 +2,11 @@
 export const messagesStyles = `
   .chatbot-messages {
     flex: 1;
-    padding: 16px;
+    padding: var(--message-spacing, 16px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--message-spacing, 16px);
   }
 
   .chatbot-messages::-webkit-scrollbar {
@@ -25,7 +25,7 @@ export const messagesStyles = `
   .chatbot-message {
     display: flex;
     gap: 8px;
-    max-width: 80%;
+    max-width: var(--message-max-width, 80%);
   }
 
   .chatbot-message.user {
@@ -34,8 +34,8 @@ export const messagesStyles = `
   }
 
   .chatbot-message-avatar {
-    width: 32px;
-    height: 32px;
+    width: var(--message-avatar-size, 32px);
+    height: var(--message-avatar-size, 32px);
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
@@ -55,27 +55,27 @@ export const messagesStyles = `
 
   .chatbot-message-bubble {
     padding: 12px 16px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--message-radius, var(--radius-sm, 8px));
     font-size: 14px;
     line-height: 1.4;
     word-wrap: break-word;
   }
 
   .chatbot-message.bot .chatbot-message-bubble {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: var(--bot-bubble-bg, var(--bg-secondary));
+    color: var(--bot-bubble-text, var(--text-primary));
     border-bottom-left-radius: 4px;
   }
 
   .chatbot-message.user .chatbot-message-bubble {
-    background: var(--primary-color);
-    color: white;
+    background: var(--user-bubble-bg, var(--primary-color));
+    color: var(--user-bubble-text, white);
     border-bottom-right-radius: 4px;
   }
 
   .chatbot-message-time {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--message-timestamp, var(--text-muted));
     margin-top: 4px;
   }
 

@@ -1,7 +1,15 @@
 // Base styles and CSS variables
-export const getBaseStyles = (config) => `
-  :host {
-    --primary-color: ${config.primaryColor};
+export const getBaseStyles = (config) => {
+  const theme = config.processedTheme || {};
+  
+  // Generate CSS variable declarations from processed theme
+  const cssVarDeclarations = Object.entries(theme)
+    .map(([key, value]) => `${key}: ${value};`)
+    .join('\n    ');
+  
+  // Fallback values if processedTheme is not available
+  const fallbackVars = `
+    --primary-color: ${config.primaryColor || '#3B82F6'};
     --bg-primary: #1F2937;
     --bg-secondary: #374151;
     --bg-tertiary: #4B5563;
@@ -12,17 +20,24 @@ export const getBaseStyles = (config) => `
     --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     --radius: 12px;
     --radius-sm: 8px;
+  `;
+  
+  return `
+  :host {
+    ${cssVarDeclarations || fallbackVars}
+    --font-family: ${theme['--font-family'] || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'};
+    --font-size: ${theme['--font-size'] || '14px'};
   }
 
   .chatbot-widget {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
     line-height: 1.5;
   }
 
   .chatbot-window {
     background: var(--bg-primary);
-    border-radius: var(--radius);
+    border-radius: var(--radius, 12px);
     box-shadow: var(--shadow);
     display: none;
     flex-direction: column;
@@ -46,4 +61,5 @@ export const getBaseStyles = (config) => `
     }
   }
 `;
+};
 

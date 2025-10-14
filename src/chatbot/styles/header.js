@@ -1,12 +1,12 @@
 // Header component styles
 export const headerStyles = `
   .chatbot-header {
-    background: var(--bg-secondary);
-    padding: 16px;
+    background: var(--header-bg, var(--bg-secondary));
+    padding: var(--header-padding, 16px);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--header-border, var(--border-color));
   }
 
   .chatbot-header-info {
@@ -16,8 +16,8 @@ export const headerStyles = `
   }
 
   .chatbot-avatar {
-    width: 40px;
-    height: 40px;
+    width: var(--header-avatar-size, 40px);
+    height: var(--header-avatar-size, 40px);
     border-radius: 50%;
     overflow: hidden;
     background: var(--primary-color);
@@ -31,13 +31,13 @@ export const headerStyles = `
 
   .chatbot-name {
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--header-text, var(--text-primary));
     margin-bottom: 2px;
   }
 
   .chatbot-status {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--header-status, var(--text-muted));
   }
 
   .chatbot-header-actions {
@@ -51,7 +51,7 @@ export const headerStyles = `
     color: var(--text-secondary);
     cursor: pointer;
     padding: 8px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 8px);
     display: flex;
     align-items: center;
     justify-content: center;
