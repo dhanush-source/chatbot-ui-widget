@@ -1,4 +1,4 @@
-import './chatbot/chatbot.js'
+import { ChatbotWidget } from './chatbot/chatbot.js'
 import { chatApi } from './api/api.js'
 import { markdownToHtml } from './utils/markdown.js'
 
@@ -43,19 +43,21 @@ async function loadChatHistory() {
   }
 }
 
-async function openChatbot() {
+async function initChatbot() {
+  // Only initialize once
   if (chatbotWidget) {
-    chatbotWidget.destroy();
+    return;
   }
   
-  
   chatApi.sessionId = SESSION_ID;
-  
   
   const chatHistory = await loadChatHistory();
   
   chatbotWidget = new ChatbotWidget({
-    layout: 'fullscreen',
+    layout: 'inline',
+    target: '#chat-container',
+    width: '100%',
+    height: '100%',
     theme: 'dark',
     primaryColor: '#3B82F6',
     autoOpen: true,
@@ -87,15 +89,9 @@ async function openChatbot() {
         console.error('Chat API Error:', error);
         return { html: 'Sorry, I\'m having trouble connecting to the server. Please try again.', isHtml: false };
       }
-    }, 
-    onClose: () => {
-      document.querySelector('.home-container').style.display = 'block';
     }
   });
-  
-  // Hide home page when chatbot opens
-  document.querySelector('.home-container').style.display = 'none';
 }
 
 // Make function globally available
-window.openChatbot = openChatbot;
+window.initChatbot = initChatbot;
