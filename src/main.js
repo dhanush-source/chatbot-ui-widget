@@ -1,19 +1,66 @@
-import './index.js'
-import { chatApi } from './api.js'
+import './chatbot/chatbot.js'
+import { chatApi } from './api/api.js'
 import { markdownToHtml } from './utils/markdown.js'
 
 let chatbotWidget = null;
+let SESSION_ID = 'testing-ui-23'; // Change this to start a new chat session
 
-function openChatbot() {
+async function loadChatHistory() {
+  try {
+    const response = await chatApi.getChatHistory(SESSION_ID);
+    console.log('Chat History Response:', response);
+    
+    if (response.data && Array.isArray(response.data)) {
+      // Reverse the array to show oldest first
+      const messages = response.data.reverse();
+      
+      // Filter and format messages
+      return messages.map(msg => {
+        if (msg.type === 'UserMessage') {
+          // Remove metadata from user messages
+          const content = msg.content.replace(/\n\[METADATA:.*\]$/, '');
+          return {
+            text: content,
+            sender: 'user',
+            timestamp: new Date()
+          };
+        } else if (msg.type === 'AssistantMessage') {
+          const htmlContent = markdownToHtml(msg.content);
+          return {
+            html: htmlContent,
+            isHtml: true,
+            sender: 'bot',
+            timestamp: new Date()
+          };
+        }
+        return null;
+      }).filter(msg => msg !== null);
+    }
+    return [];
+  } catch (error) {
+    console.error('Failed to load chat history:', error);
+    return [];
+  }
+}
+
+async function openChatbot() {
   if (chatbotWidget) {
     chatbotWidget.destroy();
   }
+  
+  
+  chatApi.sessionId = SESSION_ID;
+  
+  
+  const chatHistory = await loadChatHistory();
   
   chatbotWidget = new ChatbotWidget({
     layout: 'fullscreen',
     theme: 'dark',
     primaryColor: '#3B82F6',
     autoOpen: true,
+    initialMessages: chatHistory,
+    showGreeting: chatHistory.length === 0, 
     greeting: 'Hi! How can I help you today?',
     placeholder: 'Write a message...',
     onMessage: async (message) => {
@@ -21,7 +68,7 @@ function openChatbot() {
         const response = await chatApi.sendMessage(message);
         console.log('API Response:', response);
         
-        // Extract content from your API response
+        
         if (response.data && response.data.content) {
           const markdownContent = response.data.content;
           const htmlContent = markdownToHtml(markdownContent);

@@ -142,6 +142,9 @@ class HttpClient {
 class ChatAPI {
   constructor(baseConfig = {}) {
     this.client = new HttpClient(baseConfig);
+    this.sessionId = baseConfig.sessionId || 'testing-ui-1';
+    this.teamName="OA-TEST",
+    this.version="1.0.0"
   }
 
 
@@ -151,7 +154,7 @@ class ChatAPI {
     config = {}
   ) {
     return this.client.post('/chat/query-config', {
-      session_id:"testing-ui-4",
+      session_id:this.sessionId,
       team_name:"OA-TEST",
       version:"1.0.0",
       query:message,
@@ -166,7 +169,7 @@ class ChatAPI {
 
   // Get chat history
   async getChatHistory(sessionId, config = {}) {
-    return this.client.get(`/chat/history/${sessionId}`, {
+    return this.client.get(`/chat/history?session_id=${sessionId}`, {
       headers: {
         ...config.headers
       }
@@ -182,14 +185,6 @@ class ChatAPI {
     });
   }
 
-
-  async endSession(sessionId, config = {}) {
-    return this.client.delete(`/chat/session/${sessionId}`, {
-      headers: {
-        ...config.headers
-      }
-    });
-  }
 }
 
 

@@ -25,6 +25,7 @@
         // Display options
         autoOpen: false,
         showToggle: true,
+        showGreeting: true, // Show welcome message
         
         // Theme
         theme: 'dark',
@@ -33,11 +34,12 @@
         // Content
         greeting: 'Hi! How can I help you today?',
         placeholder: 'Write a message...',
+        initialMessages: [], 
         
         // Avatars
         avatar: {
-          bot: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzQjgyRjYiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNOCAxMmgyVjE0SDhWMTJaTTEwIDEyaDJWMTRIMTBWMTJaMTIgMTJIMTJaMTJWMTRIMTJaTTEyIDEyaDJWMTRIUzEyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cjwvc3ZnPgo=',
-          user: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNGRjYzNDciLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxMCIgeT0iMTAiPgo8cGF0aCBkPSJNMTIgMTJMMTYgMTZMMTIgMjBWMTJaTTggMTJIMTJWMTZIMThWMjBIMThaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+Cg=='
+          bot: 'src/assets/chat-bot.jpg',
+          user: 'src/assets/user.jpg'
         },
         
         // Callbacks
@@ -634,11 +636,20 @@
     }
 
     addWelcomeMessage() {
-      this.addMessage({
-        text: this.config.greeting,
-        sender: 'bot',
-        timestamp: new Date()
-      });
+      // Load initial messages if provided
+      if (this.config.initialMessages && this.config.initialMessages.length > 0) {
+        this.config.initialMessages.forEach(msg => {
+          console.log(`adding  to chat.`,msg)
+          this.addMessage(msg);
+        });
+      } else if (this.config.showGreeting) {
+        // Only show greeting if no initial messages
+        this.addMessage({
+          text: this.config.greeting,
+          sender: 'bot',
+          timestamp: new Date()
+        });
+      }
     }
 
     addMessage({ text, html, isHtml, sender, timestamp = new Date() }) {
