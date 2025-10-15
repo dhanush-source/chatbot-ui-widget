@@ -7,7 +7,8 @@ export class Message {
   render({ text, html, isHtml, sender, timestamp }) {
     const timeStr = timestamp.toLocaleTimeString([], { 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      second: '2-digit'
     });
 
     const content = html || text;

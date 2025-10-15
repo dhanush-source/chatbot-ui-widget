@@ -153,7 +153,7 @@ class ChatAPI {
     metadata={preferred:"True"},
     config = {}
   ) {
-    return this.client.post('/chat/query-config', {
+    return this.client.post('/chat/query', {
       session_id:this.sessionId,
       team_name:"OA-TEST",
       version:"1.0.0",
