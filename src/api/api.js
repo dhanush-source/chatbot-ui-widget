@@ -142,48 +142,47 @@ class HttpClient {
 class ChatAPI {
   constructor(baseConfig = {}) {
     this.client = new HttpClient(baseConfig);
-    this.sessionId = baseConfig.sessionId || 'testing-ui-1';
+    this.sessionID = baseConfig.sessionID 
     this.teamName="OA-TEST",
     this.version="1.0.0"
   }
 
 
   // Send message to chat endpoint
-  async sendMessage(message, 
-    metadata={preferred:"True"},
+  async sendMessage(
+    message,
     config = {}
   ) {
-    return this.client.post('/chat/query', {
-      session_id:this.sessionId,
+    const response=await this.client.post(`/chat/query?team_name=${this.teamName}&version=${this.version}`, {
+      session_id:this.sessionID,
       team_name:"OA-TEST",
       version:"1.0.0",
       query:message,
-      metadata,
       ...config.data
     }, {
       headers: {
         ...config.headers
       }
     });
+
+    return response.data
   }
 
   // Get chat history
-  async getChatHistory(sessionId, config = {}) {
-    return this.client.get(`/chat/history?session_id=${sessionId}`, {
+  async getChatHistory( config = {}) {
+    const response=await this.client.get(`/chat/history?session_id=${this.sessionID}`, {
       headers: {
         ...config.headers
       }
     });
+    return response.data.reverse()
   }
 
-  // Start new chat session
-  async startSession(config = {}) {
-    return this.client.post('/chat/session', {}, {
-      headers: {
-        ...config.headers
-      }
-    });
+  static init(config){
+    const api=new ChatAPI(config)
+    return api
   }
+ 
 
 }
 
@@ -204,12 +203,11 @@ const chatApi = new ChatAPI(baseConfig);
 
 
 export {
-  HttpClient,
+  ChatAPI,
   chatApi
 };
 
 // Also make available globally for non-module usage
 if (typeof window !== 'undefined') {
-  window.HttpClient = HttpClient;
   window.chatApi = chatApi;
 }

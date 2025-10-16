@@ -6,21 +6,26 @@ import { LoadingIndicator } from './components/LoadingIndicator.js';
 import { getAllStyles } from './styles/index.js';
 import { getTheme, watchSystemTheme } from './styles/themes.js';
 import { themeToCSSVariables, mergeStyles } from './utils/styleProcessor.js';
-
+import { chatApi } from '../api/api.js';
+import { markdownToHtml } from '../utils/markdown.js';
 class ChatbotWidget {
   constructor(config = {}) {
     this.config = this.mergeConfig(config);
     this.shadowRoot = null;
     this.isOpen = false;
     this.messages = [];
-    
     // Initialize components
     this.chatToggle = new ChatToggle(this.config);
     this.chatWindow = new ChatWindow(this.config);
     this.messageComponent = new Message(this.config);
     this.loadingIndicator = new LoadingIndicator(this.config);
     
-    this.init();
+  }
+
+  static async Init(config={}){
+    const widget=new ChatbotWidget(config)
+    await widget.init()
+    return widget
   }
 
   mergeConfig(userConfig) {
@@ -116,8 +121,11 @@ class ChatbotWidget {
     return cssVariables;
   }
 
-  init() {
-    this.createWidget();
+  async init() {
+    // Initialize API client
+    this.api = chatApi;
+    this.api.sessionID= this.config.sessionID;
+    await this.createWidget();
     this.attachStyles();
     this.attachEventListeners();
     
@@ -126,7 +134,7 @@ class ChatbotWidget {
     }
   }
 
-  createWidget() {
+  async createWidget() {
     const container = document.createElement('div');
     container.className = `chatbot-widget chatbot-layout-${this.config.layout}`;
     
@@ -152,7 +160,7 @@ class ChatbotWidget {
     this.shadowRoot = this.target.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(container);
 
-    this.addWelcomeMessage();
+    await this.addWelcomeMessage();
   }
 
   attachStyles() {
@@ -237,23 +245,28 @@ class ChatbotWidget {
     }
   }
 
-  addWelcomeMessage() {
+  async addWelcomeMessage() {
     // Load initial messages if provided
-    if (this.config.initialMessages && this.config.initialMessages.length > 0) {
-      this.config.initialMessages.forEach(msg => {
-        console.log(`Adding message to chat:`, msg);
-        this.addMessage(msg);
+    const initialMessages = await this.api.getChatHistory();
+    if (initialMessages && initialMessages.length > 0) {
+      initialMessages.forEach(msg => {
+        const htmlContent=markdownToHtml(msg.content)
+        this.addMessage({
+          text:htmlContent,
+          sender: msg.source==="user" ? "user" : "bot",
+          timestamp:new Date(msg.created_at)
+        });
       });
     } else if (this.config.showGreeting) {
-      // Only show greeting if no initial messages
       this.addMessage({
         text: this.config.greeting,
         sender: 'bot',
-        timestamp: new Date()
+        timestamp:new Date()
       });
     }
   }
 
+  // TODO: get timestamp from the backend 
   addMessage({ text, html, isHtml, sender, timestamp = new Date() }) {
     const messagesContainer = this.shadowRoot.getElementById('chatbot-messages');
     const tempContainer = document.createElement('div');
@@ -293,42 +306,49 @@ class ChatbotWidget {
     const input = this.shadowRoot.getElementById('chatbot-input');
     const text = input.value.trim();
     
+    // use chatBotApi here
     if (!text) return;
 
     input.value = '';
     this.addMessage({ text, sender: 'user', timestamp: new Date() });
 
-    if (this.config.onMessage) {
+    if (this.api) {
       try {
         // Show loading animation
         this.showLoadingIndicator();
         
-        const response = await this.config.onMessage(text);
-        
-        // Hide loading animation
+        const response = await this.api.sendMessage(text)
+
         this.hideLoadingIndicator();
-        
-        if (response) {
-          // Handle both string and object responses
-          if (typeof response === 'object' && response.html) {
-            this.addMessage({ 
-              html: response.html,
-              isHtml: response.isHtml,
-              sender: 'bot', 
-              timestamp: new Date() 
-            });
-          } else {
-            this.addMessage({ 
-              text: response, 
-              sender: 'bot', 
-              timestamp: new Date() 
-            });
-          }
+
+        if(response && response.content){
+          const mdContent=response.content
+          const htmlContent=markdownToHtml(mdContent)
+          
+          this.addMessage({
+            html:htmlContent,
+            isHtml: true,
+            sender: 'bot',
+            timestamp: new Date() // get it from DB
+          })
+        } else if (typeof response === 'string') {
+          this.addMessage({
+            text: response,
+            sender: 'bot',
+            timestamp: new Date()
+          });
+        } else {
+          console.error('Unexpected response format:', response);
+          this.addMessage({
+            text: 'I received your message but got an unexpected response format.',
+            sender: 'bot',
+            timestamp: new Date()
+          });
         }
       } catch (error) {
         // Hide loading animation on error
         this.hideLoadingIndicator();
-        
+        console.log("Error",error)
         this.addMessage({ 
           text: 'Sorry, something went wrong. Please try again.', 
           sender: 'bot', 
