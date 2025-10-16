@@ -1,289 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Assistant</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Widget - Minified SDK Example</title>
+</head>
+<body>
+    <h1>Chatbot Widget Demo</h1>
+    <button id="open-chatbot">Open Chatbot</button>
+    <div id="chat-container"></div>
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: #f9fafb;
-        min-height: 100vh;
-      }
-
-      /* Navbar */
-      nav {
-        background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-
-      .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 24px;
-        display: flex;
-        align-items: center;
-        height: 64px;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #3B82F6;
-        margin-right: auto;
-      }
-
-      .nav-tabs {
-        display: flex;
-        gap: 8px;
-      }
-
-      .nav-tab {
-        padding: 8px 16px;
-        background: none;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #6B7280;
-        transition: all 0.2s ease;
-      }
-
-      .nav-tab:hover {
-        background: #f3f4f6;
-        color: #1F2937;
-      }
-
-      .nav-tab.active {
-        background: #EFF6FF;
-        color: #3B82F6;
-      }
-
-      /* Page Container */
-      .page {
-        display: none;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 24px;
-      }
-
-      .page.active {
-        display: block;
-      }
-
-      /* Home Page */
-      .home-page {
-        text-align: center;
-        padding: 60px 24px;
-      }
-
-      .home-page h1 {
-        font-size: 3rem;
-        color: #1F2937;
-        margin-bottom: 16px;
-      }
-
-      .home-page .subtitle {
-        font-size: 1.25rem;
-        color: #6B7280;
-        margin-bottom: 40px;
-      }
-
-      .about-section {
-        max-width: 800px;
-        margin: 0 auto;
-        text-align: left;
-        background: white;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      }
-
-      .about-section h2 {
-        color: #1F2937;
-        margin-bottom: 16px;
-        font-size: 1.75rem;
-      }
-
-      .about-section p {
-        color: #4B5563;
-        line-height: 1.8;
-        margin-bottom: 16px;
-        font-size: 1.1rem;
-      }
-
-      .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 24px;
-        margin-top: 32px;
-      }
-
-      .feature-card {
-        background: #f9fafb;
-        padding: 24px;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-      }
-
-      .feature-card h3 {
-        color: #1F2937;
-        margin-bottom: 8px;
-        font-size: 1.125rem;
-      }
-
-      .feature-card p {
-        color: #6B7280;
-        font-size: 0.95rem;
-        margin: 0;
-      }
-
-      /* Chatbot Page */
-      .chatbot-page {
-        padding: 0 !important;
-      }
-
-      #chat-container {
-        height: calc(100vh - 104px);
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-      }
-
-      @media (max-width: 768px) {
-        .home-page h1 {
-          font-size: 2rem;
-        }
-
-        .about-section {
-          padding: 24px;
-        }
-
-        #chat-container {
-          border-radius: 0;
-          height: calc(100vh - 64px);
-        }
-
-        .chatbot-page {
-          padding: 0 !important;
-          margin: 0;
-          max-width: 100%;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav>
-      <div class="nav-container">
-        <div class="logo">🤖 AI Assistant</div>
-        <div class="nav-tabs">
-          <button class="nav-tab active" onclick="showPage('home')">Home</button>
-          <button class="nav-tab" onclick="showPage('chatbot')">Chatbot</button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Home Page -->
-    <div id="home" class="page active">
-      <div class="home-page">
-        <h1>Welcome to AI Assistant</h1>
-        <p class="subtitle">Your intelligent chat companion, powered by advanced AI</p>
-
-        <div class="about-section">
-          <h2>About This Project</h2>
-          <p>
-            This is a modern, customizable chatbot widget built with vanilla JavaScript and CSS. 
-            It's designed to be easily integrated into any website or web application, providing 
-            a seamless chat experience for your users.
-          </p>
-          <p>
-            The chatbot features a clean, responsive design that works perfectly on both desktop 
-            and mobile devices. It uses Shadow DOM for complete style isolation, ensuring it won't 
-            conflict with your existing website styles.
-          </p>
-
-          <div class="features">
-            <div class="feature-card">
-              <h3>🎨 Customizable</h3>
-              <p>Easy to customize colors, themes, and layouts to match your brand</p>
-            </div>
-            <div class="feature-card">
-              <h3>📱 Responsive</h3>
-              <p>Works seamlessly on all devices - desktop, tablet, and mobile</p>
-            </div>
-            <div class="feature-card">
-              <h3>🔧 Modular</h3>
-              <p>Built with a modular architecture for easy maintenance and extension</p>
-            </div>
-            <div class="feature-card">
-              <h3>⚡ Fast</h3>
-              <p>Lightweight and optimized for performance with minimal dependencies</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Chatbot Page -->
-    <div id="chatbot" class="page chatbot-page">
-      <div style="width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
-        <button id="open-chatbot" style="padding: 20px 40px; background: #36B3B3; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer;">
-          Open Chatbot Modal
-        </button>
-      </div>
-      <div id="chat-container"></div>
-    </div>
-
-    <script type="module" src="/src/main.js"></script>
+    <!-- Include the minified SDK -->
+    <script src="./dist/chatbot-widget.min.js"></script>
+    
     <script>
-      // Page navigation
-      function showPage(pageName) {
-        // Hide all pages
-        document.querySelectorAll('.page').forEach(page => {
-          page.classList.remove('active');
-        });
+        // Initialize the chatbot
+        let chatbotWidget = null;
         
-        // Remove active from all tabs
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-          tab.classList.remove('active');
-        });
-        
-        // Show selected page
-        document.getElementById(pageName).classList.add('active');
-        
-        // Set active tab
-        event.target.classList.add('active');
-        
-        // Initialize chatbot when switching to chatbot page
-        if (pageName === 'chatbot' && window.initChatbot) {
-          window.initChatbot();
-          
-          // Set up button click handler
-          setTimeout(() => {
-            const btn = document.getElementById('open-chatbot');
-            if (btn) {
-              btn.onclick = () => {
-                if (window.chatbotWidget) {
-                  window.chatbotWidget.open();
+        async function initChatbot() {
+            if (chatbotWidget) return;
+            
+            chatbotWidget = await ChatbotWidget.Init({
+                layout: 'bubble',
+                target: 'body',
+                width: '800px',
+                height: '600px',
+                theme: 'light',
+                autoOpen: false,
+                greeting: 'Hi! How can I help you today?',
+                apiConfig: {
+                    baseURL: 'http://localhost:8000/api/v1',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    timeout: 30000,
+                    teamName: "BPJS-TEST",
+                    version: "1.0.0",
+                    sessionID:"testing-ui-67"
                 }
-              };
-            }
-          }, 100);
+            });
         }
-      }
+        
+        // Set up button click handler
+        document.getElementById('open-chatbot').addEventListener('click', async () => {
+            if (!chatbotWidget) {
+                await initChatbot();
+            }
+            chatbotWidget.open();
+        });
     </script>
-  </body>
+</body>
 </html>

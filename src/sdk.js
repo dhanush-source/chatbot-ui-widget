@@ -1,6 +1,6 @@
 /**
- * Chatbot UI Widget - Main Entry Point
- * A modern, customizable, and framework-agnostic chatbot widget
+ * Chatbot UI Widget - SDK Entry Point
+ * Minified single-file distribution
  */
 
 import { ChatbotWidget } from './chatbot/widget.js';

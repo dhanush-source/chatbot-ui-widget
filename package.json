@@ -3,14 +3,13 @@
   "version": "1.2.0",
   "description": "A modern, customizable, and framework-agnostic chatbot widget built with vanilla JavaScript and CSS",
   "type": "module",
-  "main": "./dist/chatbot-widget.umd.cjs",
-  "module": "./dist/chatbot-widget.js",
+  "main": "./dist/chatbot-widget.min.js",
+  "module": "./dist/chatbot-widget.es.min.js",
   "exports": {
     ".": {
-      "import": "./dist/chatbot-widget.js",
-      "require": "./dist/chatbot-widget.umd.cjs"
-    },
-    "./styles": "./dist/assets/chatbot-widget.css"
+      "import": "./dist/chatbot-widget.es.min.js",
+      "require": "./dist/chatbot-widget.min.js"
+    }
   },
   "files": [
     "dist",
@@ -45,8 +44,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:sdk": "vite build --mode production",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build:sdk",
     "publish:npm": "npm publish",
     "publish:beta": "npm publish --tag beta",
     "publish:patch": "npm version patch && npm publish",
@@ -54,6 +54,7 @@
     "publish:major": "npm version major && npm publish"
   },
   "devDependencies": {
+    "terser": "^5.44.0",
     "vite": "^7.1.7"
   },
   "dependencies": {

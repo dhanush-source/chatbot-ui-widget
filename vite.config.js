@@ -3,17 +3,21 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: {
     lib: {
-      entry: 'src/index.js',
+      entry: 'src/sdk.js',
       name: 'ChatbotWidget',
-      fileName: 'chatbot-widget',
+      fileName: (format) => `chatbot-widget.${format === 'umd' ? 'min.js' : 'es.min.js'}`,
       formats: ['umd', 'es']
     },
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name].[ext]',
-        exports: 'named'
+        exports: 'named',
+        compact: true
       }
     },
-    cssCodeSplit: false
+    cssCodeSplit: false,
+    minify: 'terser',
+    sourcemap: false,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000
   }
 })

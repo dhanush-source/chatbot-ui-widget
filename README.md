@@ -17,14 +17,27 @@ A modern, customizable, and framework-agnostic chatbot widget with **embedded AP
 
 ## Installation
 
+### NPM Package
 ```bash
 npm install chatbot-ui-widget
 ```
 
-Or use directly in HTML:
+### CDN (Minified Version)
+Use the minified version directly in HTML - no build step required:
+
 ```html
-<script src="https://unpkg.com/chatbot-ui-widget/dist/chatbot-widget.js"></script>
+<!-- UMD version (recommended for script tags) -->
+<script src="https://unpkg.com/chatbot-ui-widget/dist/chatbot-widget.min.js"></script>
+
+<!-- Or ES module version -->
+<script type="module">
+  import { ChatbotWidget } from 'https://unpkg.com/chatbot-ui-widget/dist/chatbot-widget.es.min.js';
+</script>
 ```
+
+**File Sizes:**
+- `chatbot-widget.min.js`: 70.5 kB (19.7 kB gzipped) - UMD format
+- `chatbot-widget.es.min.js`: 91.2 kB (22.4 kB gzipped) - ES module format
 
 ## Quick Start
 
@@ -44,6 +57,62 @@ const widget = await ChatbotWidget.Init({
 
 // API calls are handled automatically!
 // No need for onMessage callback - it's embedded
+```
+
+### CDN Usage (No Build Step Required)
+
+Perfect for quick integration without any build tools:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <div id="chat-container"></div>
+    <button id="open-chatbot">Open Chatbot</button>
+    
+    <!-- Include the minified SDK -->
+    <script src="https://unpkg.com/chatbot-ui-widget/dist/chatbot-widget.min.js"></script>
+    
+    <script>
+        let chatbotWidget = null;
+        
+        async function initChatbot() {
+            if (chatbotWidget) return;
+            
+            chatbotWidget = await ChatbotWidget.Init({
+                layout: 'modal',
+                target: 'body',
+                width: '800px',
+                height: '600px',
+                theme: 'light',
+                autoOpen: false,
+                greeting: 'Hi! How can I help you today?',
+                apiConfig: {
+                    baseURL: 'https://your-api-endpoint.com/api/v1',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    timeout: 30000,
+                    teamName: "YourTeam",
+                    version: "1.0.0",
+                    sessionID: 'user-session-123',
+                }
+            });
+        }
+        
+        // Set up button click handler
+        document.getElementById('open-chatbot').addEventListener('click', async () => {
+            if (!chatbotWidget) {
+                await initChatbot();
+            }
+            chatbotWidget.open();
+        });
+    </script>
+</body>
+</html>
 ```
 
 ### Simple Bubble Chat
@@ -135,6 +204,35 @@ const prodWidget = await ChatbotWidget.Init({
 ```
 
 ---
+
+## Minified SDK Benefits
+
+The minified version (`chatbot-widget.min.js`) is perfect for production use:
+
+### ✅ **What's Included:**
+- **Complete chatbot functionality** - All layouts, components, and features
+- **Embedded CSS styles** - No separate CSS file needed
+- **API integration** - Built-in HTTP client with session management
+- **Markdown support** - Rich text rendering capabilities
+- **All dependencies** - Including `marked` library for markdown processing
+
+### ✅ **What's Excluded:**
+- ❌ Demo files and development code
+- ❌ Source maps and debugging info
+- ❌ Unused code and dependencies
+- ❌ Development tools and examples
+
+### ✅ **Performance:**
+- **Small file size**: 70.5 kB (19.7 kB gzipped)
+- **Fast loading**: Single HTTP request
+- **No build step**: Direct browser usage
+- **CDN ready**: Available via unpkg.com
+
+### ✅ **Usage Scenarios:**
+- **Static websites** - No build process needed
+- **Quick prototypes** - Drop-in integration
+- **Legacy projects** - Works with any HTML/JS setup
+- **CDN distribution** - Global content delivery
 
 ## Integration Examples
 
