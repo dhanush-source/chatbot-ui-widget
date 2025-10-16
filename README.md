@@ -76,16 +76,62 @@ const widget = await ChatbotWidget.Init({
 
 ### API Configuration
 
-The widget includes a built-in HTTP client. Configure your API endpoint:
+The widget includes a built-in HTTP client with configurable endpoints:
 
 ```javascript
-import { chatApi } from 'chatbot-ui-widget';
+const widget = await ChatbotWidget.Init({
+  target: '#chat-container',
+  sessionID: 'user-session-123',
+  
+  // API Configuration
+  apiConfig: {
+    baseURL: 'http://localhost:8000/api/v1',  // Your API base URL
+    teamName: 'BPJS-TEST',                    // Team name for API calls
+    version: '1.0.0',                        // API version
+    timeout: 100000,                         // Request timeout (ms)
+    headers: {
+      'Content-Type': 'application/json',
+      // Add custom headers here
+    }
+  }
+});
 
-// The API client is pre-configured with:
-// - Base URL: http://localhost:8000/api/v1
-// - Endpoints: /chat/query, /chat/history
+// The API client automatically handles:
+// - Message sending via /chat/query
+// - Chat history loading via /chat/history
 // - Session management
 // - Error handling
+```
+
+### Multiple Environments
+
+Configure different API endpoints for different environments:
+
+```javascript
+// Development
+const devWidget = await ChatbotWidget.Init({
+  target: '#chat-container',
+  sessionID: 'dev-user-123',
+  apiConfig: {
+    baseURL: 'http://localhost:8000/api/v1',
+    teamName: 'DEV-TEAM',
+    version: '1.0.0'
+  }
+});
+
+// Production
+const prodWidget = await ChatbotWidget.Init({
+  target: '#chat-container',
+  sessionID: 'prod-user-123',
+  apiConfig: {
+    baseURL: 'https://api.myapp.com/v1',
+    teamName: 'PRODUCTION',
+    version: '2.0.0',
+    headers: {
+      'Authorization': 'Bearer prod-token'
+    }
+  }
+});
 ```
 
 ---
@@ -426,6 +472,18 @@ const widget = await ChatbotWidget.Init({
     user: '/user-avatar.jpg'
   },
   
+  // API Configuration
+  apiConfig: {
+    baseURL: 'http://localhost:8000/api/v1',  // Your API base URL
+    teamName: 'BPJS-TEST',                    // Team name for API calls
+    version: '1.0.0',                        // API version
+    timeout: 100000,                         // Request timeout (ms)
+    headers: {
+      'Content-Type': 'application/json',
+      // Add custom headers here
+    }
+  },
+  
   // API Integration (Built-in)
   // - Automatic message sending via /chat/query
   // - Chat history loading via /chat/history
@@ -438,6 +496,16 @@ const widget = await ChatbotWidget.Init({
   onClose: () => {}                 // Widget closed
 });
 ```
+
+### API Configuration Properties
+
+| Property | Type | Required | Description | Example |
+|----------|------|----------|-------------|---------|
+| `baseURL` | string | Yes | API base URL | `'http://localhost:8000/api/v1'` |
+| `teamName` | string | Yes | Team name for API calls | `'BPJS-TEST'` |
+| `version` | string | Yes | API version | `'1.0.0'` |
+| `timeout` | number | No | Request timeout in ms | `100000` |
+| `headers` | object | No | Custom headers | `{ 'Authorization': 'Bearer token' }` |
 
 ### Available Theme Override Properties
 
@@ -528,11 +596,26 @@ src/
 
 ## Advanced Examples
 
-### Example 1: Corporate Theme
+### Example 1: Corporate Theme with Custom API
 
 ```javascript
-new ChatbotWidget({
+const widget = await ChatbotWidget.Init({
+  target: '#chat-container',
+  sessionID: 'corporate-user-123',
   theme: 'light',
+  
+  // Custom API configuration
+  apiConfig: {
+    baseURL: 'https://api.mycompany.com/v1',
+    teamName: 'CORPORATE-SUPPORT',
+    version: '2.1.0',
+    timeout: 30000,
+    headers: {
+      'Authorization': 'Bearer your-api-token',
+      'X-Company-ID': '12345'
+    }
+  },
+  
   themeOverrides: {
     primaryColor: '#0066CC',
     fontFamily: 'Arial, sans-serif'

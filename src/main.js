@@ -76,11 +76,22 @@ async function initChatbot() {
   if (chatbotWidget) {
     return;
   }
-  
+
+  const apiConfig={
+    baseURL: 'http://localhost:8000/api/v1',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: 100000,
+    sessionID:SESSION_ID,
+    teamName:"BPJS-TEST",
+    version:"1.0.0"
+  }
+
   const config = {
     ...OAThemeConfig,
-    sessionID:SESSION_ID,
     showGreeting: true,
+    apiConfig
   }
   chatbotWidget =await ChatbotWidget.Init(config)
 }

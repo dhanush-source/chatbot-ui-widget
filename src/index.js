@@ -4,7 +4,7 @@
  */
 
 import { ChatbotWidget } from './chatbot/widget.js';
-import { chatApi } from './api/api.js';
+import { ChatAPI } from './api/api.js';
 import { markdownToHtml, formatText, sanitizeHtml } from './utils/markdown.js';
 
 // Export main classes and utilities

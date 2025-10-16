@@ -6,7 +6,7 @@ import { LoadingIndicator } from './components/LoadingIndicator.js';
 import { getAllStyles } from './styles/index.js';
 import { getTheme, watchSystemTheme } from './styles/themes.js';
 import { themeToCSSVariables, mergeStyles } from './utils/styleProcessor.js';
-import { chatApi } from '../api/api.js';
+import { ChatAPI} from '../api/api.js';
 import { markdownToHtml } from '../utils/markdown.js';
 class ChatbotWidget {
   constructor(config = {}) {
@@ -71,7 +71,10 @@ class ChatbotWidget {
       // Callbacks
       onMessage: null,
       onOpen: null,
-      onClose: null
+      onClose: null,
+
+
+      apiConfig:{}, // overwrite it with config from sdk Init()
     };
 
     const merged = { ...defaults, ...userConfig };
@@ -123,8 +126,9 @@ class ChatbotWidget {
 
   async init() {
     // Initialize API client
-    this.api = chatApi;
-    this.api.sessionID= this.config.sessionID;
+    this.api = new ChatAPI(this.config.apiConfig);
+    console.log("api Config",this.config.apiConfig)
+
     await this.createWidget();
     this.attachStyles();
     this.attachEventListeners();

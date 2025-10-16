@@ -143,8 +143,8 @@ class ChatAPI {
   constructor(baseConfig = {}) {
     this.client = new HttpClient(baseConfig);
     this.sessionID = baseConfig.sessionID 
-    this.teamName="BPJS-TEST",
-    this.version="1.0.0"
+    this.teamName=baseConfig.teamName,
+    this.version=baseConfig.version
   }
 
 
@@ -187,27 +187,15 @@ class ChatAPI {
 }
 
 
-const baseConfig = {
-  baseURL: 'http://localhost:8000/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 100000,
-}
-
-const chatApi = new ChatAPI(baseConfig);
-
-
 
 
 
 
 export {
-  ChatAPI,
-  chatApi
+  ChatAPI
 };
 
 // Also make available globally for non-module usage
 if (typeof window !== 'undefined') {
-  window.chatApi = chatApi;
+  window.ChatAPI = ChatAPI
 }
