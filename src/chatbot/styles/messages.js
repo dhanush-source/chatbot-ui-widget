@@ -88,11 +88,16 @@ export const messagesStyles = `
     line-height: 1.6;
   }
 
-  .chatbot-message-bubble.html-content p {
+  /* Target ALL p tags inside message bubbles */
+  .chatbot-message-bubble p {
     margin: 0 0 12px 0;
   }
 
-  .chatbot-message-bubble.html-content p:last-child {
+  .chatbot-message-bubble p:first-child {
+    margin-top: 0;
+  }
+
+  .chatbot-message-bubble p:last-child {
     margin-bottom: 0;
   }
 
