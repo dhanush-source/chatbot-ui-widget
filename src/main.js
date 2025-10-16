@@ -6,10 +6,10 @@ let SESSION_ID = 'testing-ui-67';
 
 // OneAssure Theme Configuration
 const OAThemeConfig = {
-  layout: 'bubble',
+  layout: 'modal',
   target: '#chat-container', // where u want to insert chatbot widget
-  width: '100%',
-  height: '100%',
+  width: '1200px',
+  height: '800px',
   
   theme: 'light',
   
@@ -66,7 +66,7 @@ const OAThemeConfig = {
     shadowHover: '0 4px 16px rgba(54, 179, 179, 0.18)',     
   },
   
-  autoOpen: true,
+  autoOpen: false,
   greeting: 'Hi! I\'m your OneAssure Insurance Assistant. How can I help you today?',
   placeholder: 'Type your message here...',
 };
@@ -90,10 +90,14 @@ async function initChatbot() {
 
   const config = {
     ...OAThemeConfig,
+    sessionID: SESSION_ID,
     showGreeting: true,
     apiConfig
   }
-  chatbotWidget =await ChatbotWidget.Init(config)
+  chatbotWidget = await ChatbotWidget.Init(config);
+  
+  // Make widget globally accessible
+  window.chatbotWidget = chatbotWidget;
 }
 
 // Make function globally available

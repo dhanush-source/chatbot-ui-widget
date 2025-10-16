@@ -5,7 +5,7 @@ export class Header {
   }
 
   render() {
-    const minimizeButton = this.config.layout !== 'inline' ? `
+    const minimizeButton = (this.config.layout !== 'inline' && this.config.layout !== 'modal') ? `
       <button class="chatbot-btn-minimize" id="chatbot-minimize">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

@@ -30,8 +30,8 @@ class ChatbotWidget {
 
   mergeConfig(userConfig) {
     const defaults = {
-      // Layout options
-      layout: 'inline', // 'inline', 'bubble', 'embedded', 'fullscreen'
+        // Layout options
+        layout: 'inline', // 'inline', 'bubble', 'embedded', 'fullscreen', 'modal'
       target: 'body',
       width: '100%',
       height: '600px',
@@ -127,7 +127,6 @@ class ChatbotWidget {
   async init() {
     // Initialize API client
     this.api = new ChatAPI(this.config.apiConfig);
-    console.log("api Config",this.config.apiConfig)
 
     await this.createWidget();
     this.attachStyles();
@@ -142,11 +141,19 @@ class ChatbotWidget {
     const container = document.createElement('div');
     container.className = `chatbot-widget chatbot-layout-${this.config.layout}`;
     
-    // Render components
-    container.innerHTML = `
-      ${this.chatToggle.render()}
-      ${this.chatWindow.render()}
-    `;
+    // Render components based on layout
+    if (this.config.layout === 'modal') {
+      container.innerHTML = `
+        <div class="chatbot-modal-backdrop"></div>
+        ${this.chatWindow.render()}
+        <button class="chatbot-modal-close" id="chatbot-modal-close">×</button>
+      `;
+    } else {
+      container.innerHTML = `
+        ${this.chatToggle.render()}
+        ${this.chatWindow.render()}
+      `;
+    }
 
     // Handle different target types
     if (typeof this.config.target === 'string') {
@@ -182,26 +189,53 @@ class ChatbotWidget {
   }
 
   attachEventListeners() {
-    const toggle = this.shadowRoot.getElementById('chatbot-toggle');
-    const minimize = this.shadowRoot.getElementById('chatbot-minimize');
-    const sendBtn = this.shadowRoot.getElementById('chatbot-send');
-    const input = this.shadowRoot.getElementById('chatbot-input');
+    if (this.config.layout === 'modal') {
+      // Modal layout event listeners
+      const backdrop = this.shadowRoot.querySelector('.chatbot-modal-backdrop');
+      const modalClose = this.shadowRoot.getElementById('chatbot-modal-close');
+      const sendBtn = this.shadowRoot.getElementById('chatbot-send');
+      const input = this.shadowRoot.getElementById('chatbot-input');
 
-    if (toggle) {
-      toggle.addEventListener('click', () => this.toggle());
-    }
-    
-    if (minimize) {
-      minimize.addEventListener('click', () => this.close());
-    }
-    
-    sendBtn.addEventListener('click', () => this.sendMessage());
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        this.sendMessage();
+      // Close on backdrop click
+      if (backdrop) {
+        backdrop.addEventListener('click', () => this.close());
       }
-    });
+      
+      // Close on X button click
+      if (modalClose) {
+        modalClose.addEventListener('click', () => this.close());
+      }
+      
+      sendBtn.addEventListener('click', () => this.sendMessage());
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.sendMessage();
+        }
+      });
+    } else {
+      // Other layouts event listeners
+      const toggle = this.shadowRoot.getElementById('chatbot-toggle');
+      const minimize = this.shadowRoot.getElementById('chatbot-minimize');
+      const sendBtn = this.shadowRoot.getElementById('chatbot-send');
+      const input = this.shadowRoot.getElementById('chatbot-input');
+
+      if (toggle) {
+        toggle.addEventListener('click', () => this.toggle());
+      }
+      
+      if (minimize) {
+        minimize.addEventListener('click', () => this.close());
+      }
+      
+      sendBtn.addEventListener('click', () => this.sendMessage());
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.sendMessage();
+        }
+      });
+    }
   }
 
   toggle() {
@@ -213,12 +247,19 @@ class ChatbotWidget {
   }
 
   open() {
-    const window = this.shadowRoot.getElementById('chatbot-window');
-    
-    if (['inline', 'embedded', 'fullscreen'].includes(this.config.layout)) {
-      window.style.display = 'flex';
+    if (this.config.layout === 'modal') {
+      const container = this.shadowRoot.querySelector('.chatbot-widget');
+      if (container) {
+        container.classList.add('open');
+      }
     } else {
-      window.classList.add('open');
+      const window = this.shadowRoot.getElementById('chatbot-window');
+      
+      if (['inline', 'embedded', 'fullscreen'].includes(this.config.layout)) {
+        window.style.display = 'flex';
+      } else {
+        window.classList.add('open');
+      }
     }
     
     this.isOpen = true;
@@ -229,17 +270,24 @@ class ChatbotWidget {
   }
 
   close() {
-    const window = this.shadowRoot.getElementById('chatbot-window');
-    
     // Inline layout should never close
     if (this.config.layout === 'inline') {
       return;
     }
     
-    if (this.config.layout === 'bubble') {
-      window.classList.remove('open');
+    if (this.config.layout === 'modal') {
+      const container = this.shadowRoot.querySelector('.chatbot-widget');
+      if (container) {
+        container.classList.remove('open');
+      }
     } else {
-      window.style.display = 'none';
+      const window = this.shadowRoot.getElementById('chatbot-window');
+      
+      if (this.config.layout === 'bubble') {
+        window.classList.remove('open');
+      } else {
+        window.style.display = 'none';
+      }
     }
     
     this.isOpen = false;

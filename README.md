@@ -10,7 +10,7 @@ A modern, customizable, and framework-agnostic chatbot widget with **embedded AP
 - **Session Management** - Automatic chat history loading
 - **Fully Customizable** - Preset themes, component-level styling, and custom CSS
 - **Light/Dark Modes** - Built-in themes with auto system detection
-- **Multiple Layouts** - Bubble, inline, embedded, and fullscreen modes
+- **Multiple Layouts** - Bubble, inline, embedded, fullscreen, and modal modes
 - **Framework Agnostic** - Works with React, Vue, vanilla JS, or any framework
 - **Shadow DOM Isolation** - No style conflicts with your existing website
 - **Modular Architecture** - Component-based design for easy customization
@@ -422,6 +422,30 @@ new ChatbotWidget({
 });
 ```
 
+### Modal Layout
+
+Centered popup with backdrop - perfect for focused conversations:
+
+```javascript
+new ChatbotWidget({
+  layout: 'modal',
+  target: 'body',
+  width: '1200px',
+  height: '800px',
+  autoOpen: false // Opens when you call widget.open()
+});
+
+// Open the modal programmatically
+widget.open();
+```
+
+**Modal Features:**
+- Centered modal with dark backdrop
+- Close on backdrop click or × button
+- Configurable size (width/height)
+- Mobile responsive (becomes fullscreen on mobile)
+- Smooth slide-in animation
+
 ### Embedded Layout
 
 Fixed within a container:
@@ -448,9 +472,9 @@ const widget = await ChatbotWidget.Init({
   sessionID: 'user-123',           // Required for API integration
   
   // Layout
-  layout: 'inline',                 // 'inline' | 'bubble' | 'fullscreen' | 'embedded'
-  width: '100%',                    // CSS width
-  height: '600px',                  // CSS height
+  layout: 'inline',                 // 'inline' | 'bubble' | 'fullscreen' | 'embedded' | 'modal'
+  width: '100%',                    // CSS width (for modal: '800px', '1200px', etc.)
+  height: '600px',                  // CSS height (for modal: '600px', '800px', etc.)
   position: 'bottom-right',         // For bubble layout
   
   // Theme
@@ -739,6 +763,8 @@ Programmatically open the widget:
 chatbot.open();
 ```
 
+**Note:** For modal layout, this shows the centered popup with backdrop. For other layouts, it shows the chat window.
+
 ### `close()`
 
 Programmatically close the widget:
@@ -746,6 +772,8 @@ Programmatically close the widget:
 ```javascript
 chatbot.close();
 ```
+
+**Note:** For modal layout, this hides the popup and backdrop. Inline layout cannot be closed.
 
 ### `addMessage()`
 
