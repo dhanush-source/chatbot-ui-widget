@@ -143,7 +143,7 @@ class ChatAPI {
   constructor(baseConfig = {}) {
     this.client = new HttpClient(baseConfig);
     this.sessionID = baseConfig.sessionID 
-    this.teamName="OA-TEST",
+    this.teamName="BPJS-TEST",
     this.version="1.0.0"
   }
 

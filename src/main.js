@@ -6,7 +6,7 @@ let SESSION_ID = 'testing-ui-67';
 
 // OneAssure Theme Configuration
 const OAThemeConfig = {
-  layout: 'inline',
+  layout: 'bubble',
   target: '#chat-container', // where u want to insert chatbot widget
   width: '100%',
   height: '100%',
@@ -61,7 +61,7 @@ const OAThemeConfig = {
     fontFamily: 'Open Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     
     
-    borderRadius: '8px',            
+    borderRadius: '16px',            
     shadow: '0 2px 8px rgba(54, 179, 179, 0.12)',           
     shadowHover: '0 4px 16px rgba(54, 179, 179, 0.18)',     
   },

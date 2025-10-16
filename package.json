@@ -9,7 +9,8 @@
     ".": {
       "import": "./dist/chatbot-widget.js",
       "require": "./dist/chatbot-widget.umd.cjs"
-    }
+    },
+    "./styles": "./dist/assets/chatbot-widget.css"
   },
   "files": [
     "dist",
@@ -25,14 +26,32 @@
     "javascript",
     "frontend",
     "customizable",
-    "shadow-dom"
+    "shadow-dom",
+    "markdown",
+    "api",
+    "conversational-ui",
+    "customer-support"
   ],
+  "homepage": "https://github.com/dhanush-source/chatbot-ui-widget",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhanush-source/chatbot-ui-widget.git"
+  },
+  "bugs": {
+    "url": "hhttps://github.com/dhanush-source/chatbot-ui-widget.git/issues"
+  },
   "author": "Dhanush <dhanush@oneassure.in>",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build",
+    "publish:npm": "npm publish",
+    "publish:beta": "npm publish --tag beta",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:major": "npm version major && npm publish"
   },
   "devDependencies": {
     "vite": "^7.1.7"
