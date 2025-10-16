@@ -1,18 +1,19 @@
 # Chatbot UI Widget
 
-A modern, customizable, and framework-agnostic chatbot widget built with vanilla JavaScript and CSS. Features a modular component architecture, comprehensive theming system, and Shadow DOM isolation for seamless integration into any website.
+A modern, customizable, and framework-agnostic chatbot widget with **embedded API integration**. Features modular components, comprehensive theming, Shadow DOM isolation, and built-in HTTP client for seamless chat functionality.
 
 ## Features
 
-- **Fully Customizable** - Preset themes, component-level styling, and custom CSS support
+- **Embedded API Integration** - Built-in HTTP client with session management
+- **Markdown Support** - Rich text rendering with `marked` library
+- **Loading Indicators** - Typing animations during API calls
+- **Session Management** - Automatic chat history loading
+- **Fully Customizable** - Preset themes, component-level styling, and custom CSS
 - **Light/Dark Modes** - Built-in themes with auto system detection
-- **Responsive Design** - Works perfectly on desktop, tablet, and mobile
 - **Multiple Layouts** - Bubble, inline, embedded, and fullscreen modes
 - **Framework Agnostic** - Works with React, Vue, vanilla JS, or any framework
 - **Shadow DOM Isolation** - No style conflicts with your existing website
-- **Zero Dependencies** - Lightweight and fast
-- **Markdown Support** - Rich text rendering for bot responses
-- **Easy Integration** - Simple API, minimal configuration
+- **Modular Architecture** - Component-based design for easy customization
 
 ## Installation
 
@@ -27,24 +28,34 @@ Or use directly in HTML:
 
 ## Quick Start
 
-### Basic Usage
+### Basic Usage with Embedded API
 
 ```javascript
 import { ChatbotWidget } from 'chatbot-ui-widget';
 
-new ChatbotWidget({
+const widget = await ChatbotWidget.Init({
   target: '#chat-container',
   layout: 'inline',
   theme: 'dark',
-  onMessage: async (message) => {
-    // Call your API
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message })
-    });
-    const data = await response.json();
-    return data.reply;
-  }
+  sessionID: 'user-session-123',  // Required for API integration
+  autoOpen: true,
+  greeting: 'Hi! How can I help you today?'
+});
+
+// API calls are handled automatically!
+// No need for onMessage callback - it's embedded
+```
+
+### Simple Bubble Chat
+
+```javascript
+import { ChatbotWidget } from 'chatbot-ui-widget';
+
+const widget = await ChatbotWidget.Init({
+  layout: 'bubble',
+  position: 'bottom-right',
+  sessionID: 'user-123',
+  autoOpen: false
 });
 ```
 
@@ -55,11 +66,26 @@ new ChatbotWidget({
 <script type="module">
   import { ChatbotWidget } from './chatbot-widget.js';
   
-  new ChatbotWidget({
+  const widget = await ChatbotWidget.Init({
     target: '#chat-container',
-    layout: 'inline'
+    layout: 'inline',
+    sessionID: 'user-123'
   });
 </script>
+```
+
+### API Configuration
+
+The widget includes a built-in HTTP client. Configure your API endpoint:
+
+```javascript
+import { chatApi } from 'chatbot-ui-widget';
+
+// The API client is pre-configured with:
+// - Base URL: http://localhost:8000/api/v1
+// - Endpoints: /chat/query, /chat/history
+// - Session management
+// - Error handling
 ```
 
 ---
@@ -370,9 +396,10 @@ new ChatbotWidget({
 ### Complete API Reference
 
 ```javascript
-new ChatbotWidget({
+const widget = await ChatbotWidget.Init({
   // Required
   target: '#chat-container',        // CSS selector or HTMLElement
+  sessionID: 'user-123',           // Required for API integration
   
   // Layout
   layout: 'inline',                 // 'inline' | 'bubble' | 'fullscreen' | 'embedded'
@@ -393,17 +420,20 @@ new ChatbotWidget({
   greeting: 'Hi! How can I help?',  // Welcome message text
   placeholder: 'Type a message...',  // Input placeholder
   
-  // Data
-  initialMessages: [],              // Pre-load messages
-  
   // Avatars
   avatar: {
     bot: '/bot-avatar.jpg',
     user: '/user-avatar.jpg'
   },
   
-  // Callbacks
-  onMessage: async (msg) => {},     // Handle user messages
+  // API Integration (Built-in)
+  // - Automatic message sending via /chat/query
+  // - Chat history loading via /chat/history
+  // - Session management
+  // - Markdown rendering
+  // - Loading indicators
+  
+  // Optional Callbacks
   onOpen: () => {},                 // Widget opened
   onClose: () => {}                 // Widget closed
 });
@@ -457,28 +487,37 @@ ChatbotWidget (Main Class)
 ### Directory Structure
 
 ```
-src/chatbot/
-├── chatbot.js              # Main widget class
-├── components/
-│   ├── ChatToggle.js       # Toggle button
-│   ├── ChatWindow.js       # Window container
-│   ├── Header.js           # Header component
-│   ├── MessageList.js      # Messages container
-│   ├── Message.js          # Message bubble
-│   └── InputBox.js         # Input field
-├── styles/
-│   ├── base.js             # CSS variables
-│   ├── themes.js           # Theme presets
-│   ├── layouts.js          # Layout styles
-│   ├── header.js           # Header styles
-│   ├── messages.js         # Message styles
-│   └── input.js            # Input styles
-└── utils/
-    └── styleProcessor.js   # Theme processing
+src/
+├── index.js                # Main entry point & exports
+├── main.js                 # Example usage & theme config
+├── api/
+│   └── api.js              # HTTP client & ChatAPI class
+├── utils/
+│   └── markdown.js         # Markdown rendering utilities
+└── chatbot/
+    ├── widget.js           # Main ChatbotWidget class
+    ├── components/
+    │   ├── ChatToggle.js   # Toggle button
+    │   ├── ChatWindow.js   # Window container
+    │   ├── Header.js       # Header component
+    │   ├── Message.js      # Message bubble
+    │   ├── InputBox.js     # Input field
+    │   └── LoadingIndicator.js # Typing animation
+    └── styles/
+        ├── base.js         # CSS variables
+        ├── themes.js       # Theme presets
+        ├── layouts.js      # Layout styles
+        ├── header.js       # Header styles
+        ├── messages.js     # Message styles
+        └── input.js        # Input styles
 ```
 
 ### Key Features
 
+- **Embedded API Integration** - Built-in HTTP client with session management
+- **Async Initialization** - `ChatbotWidget.Init()` factory method for async setup
+- **Markdown Rendering** - Automatic conversion using `marked` library
+- **Loading Indicators** - Typing animations during API calls
 - **Shadow DOM** - Complete style isolation from host page
 - **Modular Components** - Each component is self-contained
 - **CSS Variables** - All styles use CSS custom properties
