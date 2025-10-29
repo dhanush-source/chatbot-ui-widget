@@ -78,14 +78,15 @@ async function initChatbot() {
   }
 
   const apiConfig={
-    baseURL: 'http://localhost:8000/api/v1',
+    baseURL: 'http://localhost:9000/v1/autogen',
     headers: {
       'Content-Type': 'application/json',
     },
     timeout: 100000,
     sessionID:SESSION_ID,
     teamName:"BPJS-TEST",
-    version:"1.0.0"
+    version:"1.0.0",
+    authToken:"mOAHr-XAESfghoLM_jlW15boN6iA1J83yBIfJ6dSptkBKeuCvl3Ixmu1JDYP0T16",
   }
 
   const config = {

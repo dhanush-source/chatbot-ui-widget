@@ -11,13 +11,27 @@ export default defineConfig({
     rollupOptions: {
       output: {
         exports: 'named',
-        compact: true
-      }
+        compact: true,
+        // Bundle all dependencies (widget should work standalone)
+        inlineDynamicImports: true
+      },
+      // Externalize nothing - bundle everything for standalone use
+      external: []
     },
     cssCodeSplit: false,
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console.logs for debugging
+        drop_debugger: true,
+        pure_funcs: []
+      },
+      format: {
+        comments: false
+      }
+    },
     sourcemap: false,
-    reportCompressedSize: false,
+    reportCompressedSize: true,
     chunkSizeWarningLimit: 1000
   }
 })

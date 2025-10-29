@@ -144,7 +144,8 @@ class ChatAPI {
     this.client = new HttpClient(baseConfig);
     this.sessionID = baseConfig.sessionID 
     this.teamName=baseConfig.teamName,
-    this.version=baseConfig.version
+    this.version=baseConfig.version,
+    this.authToken=baseConfig.authToken 
   }
 
 
@@ -156,6 +157,7 @@ class ChatAPI {
     const response=await this.client.post(`/chat/query?team_name=${this.teamName}&version=${this.version}`, {
       session_id:this.sessionID,
       query:message,
+      team_config_token:this.authToken,
       ...config.data
     }, {
       headers: {
@@ -163,7 +165,7 @@ class ChatAPI {
       }
     });
 
-    return response.data
+    return response.data.payload
   }
 
   // Get chat history
@@ -173,7 +175,7 @@ class ChatAPI {
         ...config.headers
       }
     });
-    return response.data.reverse()
+    return response.data.payload.reverse()
   }
 
   static init(config){

@@ -10,43 +10,23 @@
     <button id="open-chatbot">Open Chatbot</button>
     <div id="chat-container"></div>
 
-    <!-- Include the minified SDK -->
-    <script src="./dist/chatbot-widget.min.js"></script>
+    <!-- Load main.js as a module (it imports widget.js properly) -->
+    <script type="module" src="/src/main.js"></script>
     
     <script>
-        // Initialize the chatbot
-        let chatbotWidget = null;
-        
-        async function initChatbot() {
-            if (chatbotWidget) return;
-            
-            chatbotWidget = await ChatbotWidget.Init({
-                layout: 'bubble',
-                target: 'body',
-                width: '800px',
-                height: '600px',
-                theme: 'light',
-                autoOpen: false,
-                greeting: 'Hi! How can I help you today?',
-                apiConfig: {
-                    baseURL: 'http://localhost:8000/api/v1',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    timeout: 30000,
-                    teamName: "BPJS-TEST",
-                    version: "1.0.0",
-                    sessionID:"testing-ui-67"
-                }
-            });
-        }
-        
-        // Set up button click handler
-        document.getElementById('open-chatbot').addEventListener('click', async () => {
-            if (!chatbotWidget) {
-                await initChatbot();
+        // Set up button click handler - wait for module to load
+        document.addEventListener('DOMContentLoaded', () => {
+            const openBtn = document.getElementById('open-chatbot');
+            if (openBtn) {
+                openBtn.addEventListener('click', async () => {
+                    if (window.initChatbot) {
+                        await window.initChatbot();
+                        if (window.chatbotWidget) {
+                            window.chatbotWidget.open();
+                        }
+                    }
+                });
             }
-            chatbotWidget.open();
         });
     </script>
 </body>
