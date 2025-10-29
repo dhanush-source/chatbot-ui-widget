@@ -155,8 +155,6 @@ class ChatAPI {
   ) {
     const response=await this.client.post(`/chat/query?team_name=${this.teamName}&version=${this.version}`, {
       session_id:this.sessionID,
-      team_name:"OA-TEST",
-      version:"1.0.0",
       query:message,
       ...config.data
     }, {
