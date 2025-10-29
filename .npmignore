@@ -44,3 +44,10 @@ coverage/
 docs/
 *.md
 !README.md
+
+# Exclude large image files from dist
+dist/assets/*.jpg
+dist/assets/*.png
+dist/assets/*.svg
+!dist/assets/chatbot-widget.css
+dist/vite.svg
